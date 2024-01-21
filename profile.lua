@@ -16,12 +16,12 @@ end
 Hooks:Add("LocalizationManagerPostInit", "currency_changer_loc", function(...)
 	LocalizationManager:add_localized_strings({
 		currency_desc = tweak_data.currency_desc or "",
-		currency_code = "Currency",
+		currency_code = "Currency code",
 	})
-		
+
 	if Idstring("russian"):key() == SystemInfo:language():key() then
 		LocalizationManager:add_localized_strings({
-			currency_code = "Валюта",
+			currency_code = "Код валюты",
 		})
 	end
 end)
@@ -72,6 +72,7 @@ Hooks:Add("MenuManagerBuildCustomMenus", "_add_currency_code_item", function(men
 			text_id = "currency_code",
 			help_id = "currency_desc",
 			empty_gui_input_limit = 28,
+			input_limit = 3,
 			callback = "change_currency_call"
 		}
 		local new_item = node:create_item(data_node, params)
