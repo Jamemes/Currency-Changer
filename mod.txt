@@ -1,0 +1,21 @@
+{
+  "name": "Currency Changer",
+  "description": " ",
+  "author": "James",
+  "contact": "#zhamies",
+  "version": "1",
+  "priority": 1,
+  "hooks": [
+		{"hook_id": "lib/managers/menu/playerprofileguiobject", "script_path": "profile.lua"},
+		{"hook_id": "lib/managers/moneymanager", 				"script_path": "money.lua"},
+		{"hook_id": "lib/managers/experiencemanager",			"script_path": "exp.lua"}
+  ],
+	"updates" : [
+		{
+			"identifier" : "Currency-Changer",
+			"host": {
+				"meta": "https://raw.githubusercontent.com/Jamemes/Currency-Changer/meta/meta.json"
+			}
+		}
+	]
+}
