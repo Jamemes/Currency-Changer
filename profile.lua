@@ -16,12 +16,12 @@ end
 Hooks:Add("LocalizationManagerPostInit", "currency_changer_loc", function(...)
 	LocalizationManager:add_localized_strings({
 		currency_desc = tweak_data.currency_desc or "",
-		currency_code = "Currency code",
+		currency_code = "Currency",
 	})
 
 	if Idstring("russian"):key() == SystemInfo:language():key() then
 		LocalizationManager:add_localized_strings({
-			currency_code = "Код валюты",
+			currency_code = "Валюта",
 		})
 	end
 end)
@@ -72,7 +72,6 @@ Hooks:Add("MenuManagerBuildCustomMenus", "_add_currency_code_item", function(men
 			text_id = "currency_code",
 			help_id = "currency_desc",
 			empty_gui_input_limit = 28,
-			input_limit = 3,
 			callback = "change_currency_call"
 		}
 		local new_item = node:create_item(data_node, params)
@@ -90,12 +89,13 @@ Hooks:Add("MenuManagerBuildCustomMenus", "_add_currency_code_item", function(men
 		end
 		
 		table.insert(node._items, pos, new_item)
+		test.text(node)
 	end
 end)
 	
 function MenuCallbackHandler:change_currency_call(item)
-	if string.len(item._input_text) == 3 then
-		local google = url .. item._input_text
+	if item._input_text ~= "" then
+		local google = url .. item:input_text()
 		dohttpreq(google, function(json_data)
 			local xml = json.encode(json_data)
 			local currency_desc = get_info(xml, [[BNeawe vvjwJb AP7Wnd\">1 USD to ]], [[- Xe]])
@@ -108,10 +108,11 @@ function MenuCallbackHandler:change_currency_call(item)
 				tweak_data.currency = currency
 				tweak_data.cash_sign = "["..currency_code.."] "
 				local currency_desc = "1 USD = " .. currency .. " " .. currency_desc
-				
-				item._input_text = currency_code
+				item:set_value(currency_code)
 				LocalizationManager:add_localized_strings({currency_desc = currency_desc})
 				managers.menu_component:refresh_player_profile_gui()
+				managers.viewport:resolution_changed()
+
 				save_data({
 					currency = tweak_data.currency,
 					cash_sign = tweak_data.cash_sign,
@@ -119,13 +120,12 @@ function MenuCallbackHandler:change_currency_call(item)
 				})
 			end
 		end)
-	end
-	
-	if item._input_text == "" and (tweak_data.currency ~= 1 or tweak_data.cash_sign ~= "$") then
+	else
 		tweak_data.currency = 1
 		tweak_data.cash_sign = "$"
 		LocalizationManager:add_localized_strings({currency_desc = ""})
 		save_data({})
 		managers.menu_component:refresh_player_profile_gui()
+		managers.viewport:resolution_changed()
 	end
 end
