@@ -26,6 +26,13 @@ Hooks:Add("LocalizationManagerPostInit", "currency_changer_loc", function(...)
 	end
 end)
 
+local function save_data(tbl)
+	local file = io.open(path, 'w+')
+	if file then
+		file:write(json.encode(tbl))
+		file:close()
+	end	
+end
 
 local function get_info(str, key1, key2)
 	local _, fst = string.find(str, key1)
@@ -104,15 +111,11 @@ function MenuCallbackHandler:change_currency_call(item)
 				item._input_text = currency_code
 				LocalizationManager:add_localized_strings({currency_desc = currency_desc})
 				managers.menu_component:refresh_player_profile_gui()
-				local file = io.open(path, 'w+')
-				if file then
-					file:write(json.encode({
-						currency = tweak_data.currency,
-						cash_sign = tweak_data.cash_sign,
-						currency_desc = currency_desc
-					}))
-					file:close()
-				end	
+				save_data({
+					currency = tweak_data.currency,
+					cash_sign = tweak_data.cash_sign,
+					currency_desc = currency_desc
+				})
 			end
 		end)
 	end
@@ -121,6 +124,7 @@ function MenuCallbackHandler:change_currency_call(item)
 		tweak_data.currency = 1
 		tweak_data.cash_sign = "$"
 		LocalizationManager:add_localized_strings({currency_desc = ""})
+		save_data({})
 		managers.menu_component:refresh_player_profile_gui()
 	end
 end
