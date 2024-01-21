@@ -89,43 +89,43 @@ Hooks:Add("MenuManagerBuildCustomMenus", "_add_currency_code_item", function(men
 		end
 		
 		table.insert(node._items, pos, new_item)
-		test.text(node)
 	end
 end)
 	
 function MenuCallbackHandler:change_currency_call(item)
-	if item._input_text ~= "" then
-		local google = url .. item:input_text()
-		dohttpreq(google, function(json_data)
-			local xml = json.encode(json_data)
-			local currency_desc = get_info(xml, [[BNeawe vvjwJb AP7Wnd\">1 USD to ]], [[- Xe]])
-			local currency_code = currency_desc:sub(0, 3)
-			local currency = get_info(xml, [[<div class=\"BNeawe iBp4i AP7Wnd\"><div><div class=\"BNeawe iBp4i AP7Wnd\">]], [[ ]]):gsub("(%D+)", function(s)
-				return s == [[,]] and [[.]] or ""
+	if not item._editing then
+		if item._input_text ~= "" then
+			local google = url .. item:input_text()
+			dohttpreq(google, function(json_data)
+				local xml = json.encode(json_data)
+				local currency_desc = get_info(xml, [[BNeawe vvjwJb AP7Wnd\">1 USD to ]], [[- Xe]])
+				local currency_code = currency_desc:sub(0, 3)
+				local currency = get_info(xml, [[<div class=\"BNeawe iBp4i AP7Wnd\"><div><div class=\"BNeawe iBp4i AP7Wnd\">]], [[ ]]):gsub("(%D+)", function(s)
+					return s == [[,]] and [[.]] or ""
+				end)
+
+				if currency and (currency ~= "" or not string.find(currency, "(%D+)")) then
+					tweak_data.currency = currency
+					tweak_data.cash_sign = string.format("[%s] ", currency_code)
+					item:set_value(currency_code)
+					local currency_desc = "1 USD = " .. currency .. " " .. currency_desc
+					LocalizationManager:add_localized_strings({currency_desc = currency_desc})
+					managers.menu_component:refresh_player_profile_gui()
+					managers.viewport:resolution_changed()
+					save_data({
+						currency = tweak_data.currency,
+						cash_sign = tweak_data.cash_sign,
+						currency_desc = currency_desc
+					})
+				end
 			end)
-
-			if currency and (currency ~= "" or not string.find(currency, "(%D+)")) then
-				tweak_data.currency = currency
-				tweak_data.cash_sign = "["..currency_code.."] "
-				local currency_desc = "1 USD = " .. currency .. " " .. currency_desc
-				item:set_value(currency_code)
-				LocalizationManager:add_localized_strings({currency_desc = currency_desc})
-				managers.menu_component:refresh_player_profile_gui()
-				managers.viewport:resolution_changed()
-
-				save_data({
-					currency = tweak_data.currency,
-					cash_sign = tweak_data.cash_sign,
-					currency_desc = currency_desc
-				})
-			end
-		end)
-	else
-		tweak_data.currency = 1
-		tweak_data.cash_sign = "$"
-		LocalizationManager:add_localized_strings({currency_desc = ""})
-		save_data({})
-		managers.menu_component:refresh_player_profile_gui()
-		managers.viewport:resolution_changed()
+		else
+			tweak_data.currency = 1
+			tweak_data.cash_sign = "$"
+			LocalizationManager:add_localized_strings({currency_desc = ""})
+			save_data({})
+			managers.menu_component:refresh_player_profile_gui()
+			managers.viewport:resolution_changed()
+		end
 	end
 end

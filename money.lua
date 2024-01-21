@@ -1,4 +1,3 @@
-
 function MoneyManager:total_string()
 	return tweak_data.cash_sign .. tweak_data:sep(self:total() * tweak_data.currency)
 end
