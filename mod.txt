@@ -1,9 +1,9 @@
 {
   "name": "Currency Changer",
-  "description": " ",
+  "description": "",
   "author": "James",
   "contact": "#zhamies",
-  "version": "1",
+  "version": "2",
   "priority": 1,
   "hooks": [
 		{"hook_id": "lib/managers/menu/playerprofileguiobject", "script_path": "profile.lua"},
